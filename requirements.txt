@@ -7,4 +7,5 @@ sqlalchemy
 httpx
 python-multipart
 pillow
+google-generativeai
 itsdangerous
