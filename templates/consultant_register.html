@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+/* === General Reset === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* === Background Gradient === */
+body {
+  background: linear-gradient(135deg, #001f3f, #004080, #0078ff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+  color: #fff;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === Navbar === */
+.topnav {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topnav .brand {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #00c6ff;
+  text-shadow: 0 0 10px #00c6ff;
+}
+.topnav .nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: 0.3s;
+}
+.topnav .nav-links a:hover {
+  color: #00c6ff;
+  text-shadow: 0 0 6px #00c6ff;
+}
+
+/* === Main Container === */
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 1rem;
+  min-height: calc(100vh - 80px);
+}
+
+/* === Card === */
+.card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 420px;
+  max-width: 95%;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+.card:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-4px);
+}
+.card h3 {
+  color: #00c6ff;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 8px #00c6ff;
+}
+
+/* === Form === */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+input, textarea {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  outline: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
+  transition: box-shadow 0.3s ease;
+}
+textarea {
+  resize: none;
+  min-height: 80px;
+}
+input:focus, textarea:focus {
+  box-shadow: 0 0 0 3px #0078ff80;
+}
+
+/* === Button === */
+button {
+  background: linear-gradient(135deg, #0078ff, #00c6ff);
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+button:hover {
+  background: linear-gradient(135deg, #0062cc, #0099cc);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.4);
+}
+
+/* === Messages === */
+.message {
+  background: rgba(0, 255, 120, 0.2);
+  border-left: 4px solid #00ff88;
+  padding: 0.6rem;
+  border-radius: 6px;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* === Responsive === */
+@media (max-width: 500px) {
+  .card {
+    width: 90%;
+    padding: 2rem;
+  }
+  .card h3 {
+    font-size: 1.4rem;
+  }
+}
+</style>
+
+<!-- === Consultant Registration Page === -->
+<nav class="topnav">
+  <div class="brand">MediAI</div>
+  <div class="nav-links"><a href="/login">Login</a></div>
+</nav>
+
+<main class="centered">
+  <div class="card">
+    <h3>Consultant Registration</h3>
+    {% if message %}
+      <div class="message">{{ message }}</div>
+    {% endif %}
+    <form method="post" action="/consultant-register" enctype="multipart/form-data">
+      <input name="name" placeholder="Full name" required>
+      <input name="email" type="email" placeholder="Email" required>
+      <input name="specialization" placeholder="Specialization (e.g., cardiology)" required>
+      <button type="submit">Register</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

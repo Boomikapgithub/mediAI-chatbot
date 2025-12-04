@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    overflow: hidden;
+  }
+
+  /* Background slideshow */
+  .slideshow-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -1;
+  }
+  .slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    animation: slideShow 18s infinite;
+  }
+  .slide:nth-child(1) { animation-delay: 0s; }
+  .slide:nth-child(2) { animation-delay: 6s; }
+  .slide:nth-child(3) { animation-delay: 12s; }
+
+  @keyframes slideShow {
+    0% { opacity: 0; }
+    10%, 30% { opacity: 1; }
+    40%, 100% { opacity: 0; }
+  }
+
+  /* Auth Card */
+  .auth-card {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px 45px;
+    width: 360px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    animation: fadeIn 1s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+  }
+
+  .auth-card h2 {
+    font-weight: 700;
+    color: #4f46e5;
+    margin-bottom: 20px;
+  }
+
+  .auth-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .auth-card input {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  .auth-card input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 5px rgba(99,102,241,0.3);
+  }
+
+  .auth-card button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .auth-card button:hover {
+    background: #4f46e5;
+    transform: scale(1.03);
+  }
+
+  .auth-card .error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+
+  .auth-card .small {
+    margin-top: 12px;
+    font-size: 0.9rem;
+  }
+
+  .auth-card .small a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .auth-card .small a:hover {
+    text-decoration: underline;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .auth-card {
+      width: 85%;
+      padding: 30px 25px;
+    }
+  }
+
+  /* Optional dark mode if body.dark-mode is toggled globally */
+  body.dark-mode .auth-card {
+    background: rgba(30, 41, 59, 0.9);
+    color: #f8fafc;
+  }
+  body.dark-mode .auth-card input {
+    background: #1e293b;
+    border: 1px solid #475569;
+    color: #f8fafc;
+  }
+  body.dark-mode .auth-card button {
+    background: #4f46e5;
+  }
+</style>
+
+<div class="slideshow-bg">
+  <div class="slide" style="background-image:url('/static/images/bg1.jpg')"></div>
+  <div class="slide" style="background-image:url('/static/images/bg2.jpg')"></div>
+  <div class="slide" style="background-image:url('/static/images/bg3.jpg')"></div>
+</div>
+
+<div class="auth-card">
+  <h2>Create Account</h2>
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="/signup">
+    <input name="email" type="email" placeholder="Email" required>
+    <input type="password" name="password" maxlength="5" minlength="5" required placeholder="Enter 5-character password">
+    <input name="interests" placeholder="Interests (comma separated)">
+    <button type="submit">Sign Up</button>
+  </form>
+  <p class="small"><a href="/login">Already have an account? Login</a></p>
+</div>
+{% endblock %}

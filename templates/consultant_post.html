@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Consultant Posts – MediAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0f4ff, #e6ecff);
+      min-height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topnav {
+      width: 100%;
+      background: #0d6efd;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topnav .brand {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .topnav .nav-links a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .topnav .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    .post-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+
+    h2 { text-align: center; font-weight: 600; color: #2a4d9b; margin-bottom: 20px; }
+    textarea { resize: none; }
+    .btn-primary { background: #2a4d9b; border: none; font-weight: 500; transition: 0.3s; }
+    .btn-primary:hover { background: #1c3473; transform: translateY(-1px); }
+    .alert { text-align: center; font-weight: 500; }
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+    .post-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .post-card:hover { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .post-media { width: 100%; height: 220px; object-fit: cover; border-bottom: 1px solid #eee; }
+    video.post-media { background: #000; }
+    .bio-text { padding: 12px; font-size: 0.95rem; text-align: left; color: #444; }
+    .meta { padding: 0 12px 12px; color: #777; font-size: 0.85rem; }
+    .small-actions { display:flex; gap:8px; justify-content:flex-end; padding: 8px 12px 16px; }
+    .profile-pill { display:flex; gap:10px; align-items:center; justify-content:flex-end; }
+    .profile-pill img { width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+    footer { text-align: center; margin-top: 30px; color: #666; font-size: 0.9rem; }
+    .form-inline { display:flex; gap:8px; align-items:center; }
+    .edit-section { padding: 12px; border-top: 1px dashed #eee; background: #fafafa; }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+      <div class="brand">MediAI</div>
+      <div class="nav-links">
+          <a href="/consultants">Consultants</a>
+          <a href="/logout">Logout</a>
+      </div>
+  </nav>
+
+  <div class="container mt-3 d-flex justify-content-between align-items-center">
+    <div><a href="/login" class="btn btn-link">← Back to login</a></div>
+
+    <div class="profile-pill">
+      {% if consultant.profile_pic %}
+        <img src="/static/uploads/{{ consultant.profile_pic }}" alt="Profile">
+      {% else %}
+        <div style="width:42px;height:42px;border-radius:50%;background:#e6ecff;display:flex;align-items:center;justify-content:center;color:#2a4d9b;font-weight:700;">
+          {{ consultant.name[0]|upper }}
+        </div>
+      {% endif %}
+      <div class="ms-2 text-end">
+        <div style="font-weight:600;">{{ consultant.name }}</div>
+        <div style="font-size:0.85rem;color:#666;">{{ consultant.specialization }}</div>
+      </div>
+      <div class="ms-3">
+        <a href="/consultant_logout" class="btn btn-outline-danger btn-sm">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-container">
+    <h2>Share Your Consultant Post</h2>
+
+    {% if message %}
+      <div class="alert alert-info">{{ message }}</div>
+    {% endif %}
+
+    <form action="/consultant_post" method="post" enctype="multipart/form-data" class="mb-4">
+      <div class="mb-3">
+        <label class="form-label">Short Bio or Description</label>
+        <textarea name="content" class="form-control" rows="3" placeholder="Write something about your expertise..." required>{{ request.form.content if request.form.content else '' }}</textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Upload Image or Video</label>
+        <input type="file" name="media" accept="image/*,video/*" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Post</button>
+    </form>
+
+    <h4 class="mt-4 mb-3 text-center text-secondary">Public Posts</h4>
+
+    {% if posts %}
+      <div class="posts-grid">
+        {% for post in posts %}
+          <div class="post-card">
+            {% if post.media_path %}
+              {% set lower = post.media_path.lower() %}
+              {% if lower.endswith('.mp4') or lower.endswith('.mov') or lower.endswith('.avi') or lower.endswith('.webm') %}
+                <video controls class="post-media">
+                  <source src="/static/uploads/{{ post.media_path }}" type="video/mp4">
+                </video>
+              {% else %}
+                <img src="/static/uploads/{{ post.media_path }}" class="post-media" alt="Consultant Post">
+              {% endif %}
+            {% else %}
+              <div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#f6f8ff;color:#2a4d9b;">
+                No media
+              </div>
+            {% endif %}
+
+            <div class="bio-text">{{ post.content }}</div>
+
+            <div class="meta">
+              Posted by <strong>{{ consultant.name }}</strong>
+              • {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+
+            <div class="small-actions">
+              <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#edit-{{ loop.index }}" aria-expanded="false">Edit</button>
+
+              <form method="post" action="/delete_post" style="display:inline;">
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this post?')">Delete</button>
+              </form>
+            </div>
+
+            <div class="collapse" id="edit-{{ loop.index }}">
+              <div class="edit-section">
+                <form action="/edit_post" method="post" enctype="multipart/form-data">
+                  <input type="hidden" name="post_id" value="{{ post.id }}">
+                  <div class="mb-2">
+                    <label class="form-label small">Edit Description</label>
+                    <textarea name="new_bio" class="form-control" rows="2" required>{{ post.content }}</textarea>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">Replace Media (optional)</label>
+                    <input type="file" name="new_media" accept="image/*,video/*" class="form-control">
+                  </div>
+                  <div class="d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="collapse" data-bs-target="#edit-{{ loop.index }}">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center text-muted">No posts yet. Be the first to share!</p>
+    {% endif %}
+  </div>
+
+  <footer>© 2025 MediAI | Empowering Consultants with AI</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

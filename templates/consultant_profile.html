@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block body %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  .profile-hero { border-radius: 14px; box-shadow: 0 10px 30px rgba(2,6,23,0.06); }
+  .profile-pic { width:120px; height:120px; object-fit:cover; border-radius:12px; }
+  .post-card { border-radius:12px; box-shadow: 0 6px 20px rgba(2,6,23,0.04); overflow:hidden; }
+  .post-media { width:100%; max-height:420px; object-fit:cover; border-radius:8px; }
+  /* Teal blue navbar style */
+  nav.medi-navbar {
+    background: linear-gradient(90deg, #14b8a6 0%, #0d9488 50%, #0284c7 100%);
+    color: white;
+    padding: 13px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1100;
+    box-shadow: 0 2px 12px rgba(20,184,166,0.16);
+  }
+  .medi-navbar .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .medi-navbar .logo-circle {
+    width:36px; height:36px;
+    display:flex; align-items:center; justify-content:center;
+    background: #e0f7fa; border-radius:50%;
+  }
+  .medi-navbar .nav-title {
+    font-size: 20px; font-weight: 600; letter-spacing: 0.5px;
+    margin-left: 3px;
+  }
+  .medi-navbar .nav-links {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .medi-navbar .nav-links a {
+    display: flex; align-items: center;
+    text-decoration: none; font-weight: 500;
+    color: white; opacity: 0.96;
+    transition: opacity 0.2s, background 0.2s;
+    padding: 5px 12px;
+    border-radius: 8px;
+  }
+  .medi-navbar .nav-links a:hover {
+    opacity: 1; background:rgba(13,148,136,.12);
+  }
+  /* Push down content below fixed navbar */
+  .js-navbar-spacer {
+    height: 60px;
+  }
+</style>
+ 
+<!-- Navbar -->
+<nav class="medi-navbar">
+  <div class="nav-left">
+    <span class="logo-circle">
+      <!-- Simple SVG logo, replace if you have your own -->
+      <svg width="28" height="28" viewBox="0 0 28 28">
+        <circle cx="14" cy="14" r="13" fill="#14b8a6"/>
+        <text x="14" y="19" text-anchor="middle" font-size="15" fill="#fff" font-family="Poppins,Arial">M</text>
+      </svg>
+    </span>
+    <span class="nav-title">MediAI</span>
+  </div>
+  <div class="nav-links">
+    <a href="/consultants" title="Back">
+      <svg width="22" height="22" fill="none" viewBox="0 0 22 22">
+        <path d="M15 5l-7 6 7 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span style="margin-left:7px;">Back</span>
+    </a>
+  </div>
+</nav>
+<div class="js-navbar-spacer"></div>
+
+<!-- Content -->
+<div class="container py-5">
+  <div class="profile-hero bg-white p-4 mb-4 d-flex align-items-center gap-4" style="margin-top:0;">
+    {% if profile_pic %}
+      <img src="/{{ profile_pic }}" class="profile-pic" alt="profile">
+    {% else %}
+      <div class="profile-pic bg-secondary d-flex align-items-center justify-content-center text-white fs-2">{{ consultant.name[0] }}</div>
+    {% endif %}
+    <div>
+      <h2 class="mb-1">{{ consultant.name }}</h2>
+      <div class="text-muted">{{ consultant.specialization }}</div>
+      <p class="mt-2">{{ consultant.bio }}</p>
+      <form action="/consultant/{{ consultant.id }}/follow" method="post">
+        <button class="btn btn-primary">👤 Follow / Unfollow</button>
+      </form>
+    </div>
+  </div>
+
+  <h4 class="mb-3">Posts</h4>
+
+  {% if posts %}
+    <div class="row g-4">
+      {% for post in posts %}
+      <div class="col-12">
+        <div class="post-card bg-white p-3">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h5 class="mb-1">{{ post.title if post.title else 'Post' }}</h5>
+              <div class="text-muted small">Posted {{ post.timestamp.strftime("%d %b %Y • %I:%M %p") }}</div>
+            </div>
+            <div class="text-end">
+              <form action="/post/{{ post.id }}/like" method="post" class="d-inline">
+                <button class="btn btn-light btn-sm">❤️ Like ({{ post.likes_count if post.likes_count is defined else 0 }})</button>
+              </form>
+              <!-- edit/delete visible to owner: app shows edit/delete forms -->
+              <form action="/delete_post" method="post" class="d-inline ms-2">
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <button class="btn btn-outline-danger btn-sm">Delete</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <p>{{ post.content }}</p>
+            {% set media = post.media_path if post.media_path else (post.image_url if post.image_url is defined else None) %}
+            {% if media %}
+              {% if media.endswith('.mp4') or media.endswith('.mov') or media.endswith('.webm') %}
+                <video class="post-media mb-2" controls>
+                  <source src="/static/uploads/{{ media }}">
+                </video>
+              {% else %}
+                <img src="/static/uploads/{{ media }}" class="post-media mb-2">
+              {% endif %}
+            {% endif %}
+          </div>
+
+          <hr>
+
+          <div class="mb-2">
+            <form action="/post/{{ post.id }}/comment" method="post" class="d-flex gap-2">
+              <input name="comment_text" class="form-control" placeholder="Write a comment..." required>
+              <button class="btn btn-primary">Comment</button>
+            </form>
+          </div>
+
+          <!-- comments list -->
+          {% if post.comments %}
+            <div class="mt-3">
+              {% for c in post.comments %}
+                <div class="mb-2 p-2 bg-light rounded">
+                  <div class="small text-muted">{{ c.timestamp.strftime("%d %b %Y %I:%M %p") }} • {{ 'User '+(c.user_id | string) if c.user_id else 'Anonymous' }}</div>
+                  <div>{{ c.comment_text }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-light">No posts yet.</div>
+  {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

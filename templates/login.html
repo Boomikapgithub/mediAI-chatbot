@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+/* === Reset & Font === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* === Background Slideshow === */
+.slideshow-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -2;
+}
+.slideshow-bg .slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation: fade 18s infinite;
+}
+.slideshow-bg .slide:nth-child(1) { animation-delay: 0s; }
+.slideshow-bg .slide:nth-child(2) { animation-delay: 6s; }
+.slideshow-bg .slide:nth-child(3) { animation-delay: 12s; }
+@keyframes fade {
+  0%, 100% { opacity: 0; }
+  10%, 40% { opacity: 1; }
+}
+
+/* === Header === */
+.header {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+.header .brand {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #00c6ff;
+  text-shadow: 0 0 8px #00c6ff;
+}
+.header nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 0.8rem;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.header nav a:hover {
+  color: #00c6ff;
+  text-shadow: 0 0 8px #00c6ff;
+}
+
+/* === Auth Card === */
+.auth-card {
+  width: 370px;
+  max-width: 90%;
+  margin: 12vh auto;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-align: center;
+  transition: all 0.4s ease-in-out;
+}
+.auth-card:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+.auth-card h2 {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px #00c6ff;
+  font-weight: 700;
+}
+.auth-card .muted {
+  color: #100f0f;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.auth-card input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+.auth-card input:focus {
+  box-shadow: 0 0 0 3px #0078ff80;
+}
+.auth-card button {
+  background: linear-gradient(135deg, #0078ff, #00c6ff);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.auth-card button:hover {
+  background: linear-gradient(135deg, #0062cc, #0099cc);
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.4);
+}
+.auth-card .small {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #ddd;
+}
+.auth-card .small a {
+  color: #00c6ff;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.auth-card .small a:hover {
+  text-decoration: underline;
+}
+.error {
+  background: rgba(255, 0, 0, 0.2);
+  border-left: 4px solid #ff4444;
+  padding: 0.6rem;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* === About Section === */
+.about-section {
+  position: relative;
+  z-index: 3;
+  max-width: 900px;
+  margin: 4rem auto 6rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+}
+.about-section h3 {
+  font-size: 1.8rem;
+  color: #00c6ff;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 8px #00c6ff;
+}
+.about-section p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #0f0f11;
+}
+
+/* === Footer === */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  color: #ccc;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+.footer a {
+  color: #00c6ff;
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .auth-card {
+    margin-top: 10vh;
+  }
+  .about-section {
+    margin: 3rem 1rem;
+  }
+}
+</style>
+
+<!-- Background -->
+<div class="slideshow-bg">
+  <div class="slide" style="background-image:url('/static/images/bg1.jpg')"></div>
+  <div class="slide" style="background-image:url('/static/images/bg2.jpg')"></div>
+  <div class="slide" style="background-image:url('/static/images/bg3.jpg')"></div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="brand">MediAI</div>
+  <nav>
+    <a href="/home">Home</a>
+    <a href="/consultant_register">Consultants</a>
+  </nav>
+</header>
+
+<!-- Login Box -->
+<div class="auth-card">
+  <h2>MediAI</h2>
+  <p class="muted">Your AI Medical Assistant</p>
+
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" action="/login">
+    <input name="email" type="email" placeholder="Email" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <p class="small">
+    <a href="/signup">Sign up</a> | <a href="/forgot-password">Forgot password?</a>
+  </p>
+</div>
+
+<!-- About Section -->
+<section class="about-section">
+  <h3>About MediAI</h3>
+  <p>
+    MediAI is your intelligent healthcare companion designed to assist with medical inquiries,
+    analyze symptoms, and provide insights through AI-powered diagnostics.  
+    Our mission is to make healthcare more accessible, efficient, and data-driven.
+  </p>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  © 2025 MediAI | <a href="/privacy">Privacy Policy</a> | <a href="/contact">Contact</a>
+</footer>
+{% endblock %}
