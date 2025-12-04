@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+jinja2
+python-dotenv
+passlib[bcrypt]
+sqlalchemy
+httpx
+python-multipart
+pillow
